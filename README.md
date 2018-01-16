@@ -1,4 +1,4 @@
-# stream-server
+# stream-fun
 Video streaming service
 
 # Install
@@ -12,7 +12,7 @@ $ go get github.com/julienschmidt/httprouter
 
 ```
 
-Copy an mp4 file and rename it to `stream-server/test.mp4`. Then run
+Copy an mp4 file and rename it to `stream-fun/test.mp4`. Then run
 
 ```bash
 
