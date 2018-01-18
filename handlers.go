@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	mux "github.com/julienschmidt/httprouter"
 )
@@ -11,8 +12,21 @@ import (
 func BrowseHandler(w http.ResponseWriter, r *http.Request, _ mux.Params) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	items := FindAll()
+	items := FindAllItem()
 	if err := json.NewEncoder(w).Encode(items); err != nil {
+		panic(err)
+	}
+}
+
+// ItemHandler handles finding an Item by ID.
+func ItemHandler(w http.ResponseWriter, r *http.Request, ps mux.Params) {
+	id, err := strconv.Atoi(ps.ByName("id"))
+	if err != nil {
+		panic(err)
+	}
+
+	item := FindItemByID(id)
+	if err := json.NewEncoder(w).Encode(item); err != nil {
 		panic(err)
 	}
 }

@@ -27,4 +27,5 @@ var routes = Routes{
 	// Only an index page for now.
 	Route{"Index", "GET", "/", IndexHandler},
 	Route{"Browse", "GET", "/browse", BrowseHandler},
+	Route{"Item", "GET", "/item/:id", ItemHandler},
 }

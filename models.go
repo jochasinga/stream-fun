@@ -1,14 +1,42 @@
 package main
 
-import (
-	"time"
+var item Item
+
+type Rating int
+
+const (
+	Eyesore Rating = iota + 1
+	Bad
+	Watchable
+	Good
+	Great
 )
 
-var item Item
+func (rating Rating) String() string {
+	ratings := [...]string{
+		"",
+		"Eyesore",
+		"Bad",
+		"Watchable",
+		"Good",
+		"Great",
+	}
+	return ratings[rating]
+}
+
+// User represents a user of service.
+type User struct {
+	ID       int    `json:"id"`
+	Username string `json:"username`
+	Email    string `json:email`
+}
 
 // Item represents an item.
 type Item struct {
-	ID        int       `json:"id"`
-	Filename  string    `json:"filename"`
-	Timestamp time.Time `json:"timestamp"`
+	ID          int    `json:"id"`
+	Filename    string `json:"filename"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Screenshot  string `json:"screenshot"`
+	Ratings     Rating `json:"ratings"`
 }
