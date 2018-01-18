@@ -34,5 +34,5 @@ func ItemHandler(w http.ResponseWriter, r *http.Request, ps mux.Params) {
 // IndexHandler handles the index route. At the moment, it is always serving
 // a local movie file "test.mp4"
 func IndexHandler(w http.ResponseWriter, r *http.Request, _ mux.Params) {
-	http.ServeFile(w, r, "./test.mp4")
+	http.ServeFile(w, r, ".assets/test.mp4")
 }

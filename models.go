@@ -27,8 +27,8 @@ func (rating Rating) String() string {
 // User represents a user of service.
 type User struct {
 	ID       int    `json:"id"`
-	Username string `json:"username`
-	Email    string `json:email`
+	Username string `json:"username"`
+	Email    string `json:"email"`
 }
 
 // Item represents an item.
