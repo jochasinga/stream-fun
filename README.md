@@ -13,7 +13,10 @@ $ go get github.com/garyburd/redigo/redis
 
 ```
 
-Copy an mp4 file and rename it to `stream-fun/assets/test.mp4`. Then run
+Copy one or more mp4 files and rename them to `stream-fun/assets/my-hyphenated-title.mp4`. The filename must be hyphenated in order to be properly formatted into a readable title (in the above 
+case it would become "My Hyphenated Title").
+
+Then build the project with
 
 ```bash
 

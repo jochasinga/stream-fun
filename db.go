@@ -11,29 +11,12 @@ import (
 var (
 	currentItemID int
 	currentUserID int
-	items         = []Item{
-		Item{
-			Title:   "Before Sunset",
-			Ratings: Watchable,
-		},
-		Item{
-			Title:   "Resident Evil 2",
-			Ratings: Eyesore,
-		},
-		Item{
-			Title:   "Tokyo Sonata",
-			Ratings: Great,
-		},
-		Item{
-			Title:   "My Neighbor Totoro",
-			Ratings: Great,
-		},
-	}
 )
 
 func init() {
-	for i, item := range items {
-		CreateItem(i, item)
+	items := startScrape()
+	for _, item := range items {
+		CreateItem(item)
 	}
 }
 
@@ -46,8 +29,9 @@ func redisConnect() redis.Conn {
 }
 
 // CreateItem creates a new Item in the database.
-func CreateItem(id int, item Item) {
-	item.ID = id
+func CreateItem(item Item) {
+	item.ID = currentItemID
+	currentItemID++
 
 	conn := redisConnect()
 	defer conn.Close()
@@ -78,7 +62,6 @@ func FindAllItem() []Item {
 	}
 
 	var items []Item
-
 	if keys, ok := keys.([]interface{}); ok {
 		for _, k := range keys {
 			var item Item
@@ -89,7 +72,6 @@ func FindAllItem() []Item {
 			if err := json.Unmarshal(reply.([]byte), &item); err != nil {
 				panic(err)
 			}
-
 			items = append(items, item)
 		}
 		return items

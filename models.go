@@ -1,7 +1,5 @@
 package main
 
-var item Item
-
 type Rating int
 
 const (
