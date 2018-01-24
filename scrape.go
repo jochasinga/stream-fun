@@ -20,7 +20,7 @@ func startScrape() []Item {
 	}
 
 	for _, filename := range filenames {
-		item := Item{}
+		item := Item{ItemURL: filename}
 		fileinfo, err := os.Stat(filename)
 		if os.IsNotExist(err) {
 			log.Panic(err)

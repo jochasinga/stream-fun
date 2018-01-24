@@ -36,5 +36,6 @@ type Item struct {
 	Title         string `json:"title"`
 	Description   string `json:"description"`
 	ScreenshotURL string `json:"screenshotUrl"`
+	ItemURL       string `json:"itemUrl"`
 	Ratings       Rating `json:"ratings"`
 }

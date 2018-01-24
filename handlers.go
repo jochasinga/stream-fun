@@ -20,19 +20,25 @@ func BrowseHandler(w http.ResponseWriter, r *http.Request, _ mux.Params) {
 
 // ItemHandler handles finding an Item by ID.
 func ItemHandler(w http.ResponseWriter, r *http.Request, ps mux.Params) {
-	id, err := strconv.Atoi(ps.ByName("id"))
-	if err != nil {
-		panic(err)
-	}
-
+	id := getItemID(ps)
 	item := FindItemByID(id)
 	if err := json.NewEncoder(w).Encode(item); err != nil {
 		panic(err)
 	}
 }
 
-// IndexHandler handles the index route. At the moment, it is always serving
-// a local movie file "test.mp4"
-func IndexHandler(w http.ResponseWriter, r *http.Request, _ mux.Params) {
-	http.ServeFile(w, r, ".assets/test.mp4")
+// WatchHandler handles serving an individual item.
+func WatchHandler(w http.ResponseWriter, r *http.Request, ps mux.Params) {
+	id := getItemID(ps)
+	itemURL := FindItemByID(id).ItemURL
+	// http.ServeFile(w, r, ".assets/test.mp4")
+	http.ServeFile(w, r, itemURL)
+}
+
+func getItemID(ps mux.Params) int {
+	id, err := strconv.Atoi(ps.ByName("id"))
+	if err != nil {
+		panic(err)
+	}
+	return id
 }
