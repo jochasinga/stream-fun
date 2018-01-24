@@ -14,7 +14,7 @@ var (
 
 func startScrape() []Item {
 	items := []Item{}
-	filenames, err := filepath.Glob(filepath.Join(srcDir, "*.mp4"))
+	filenames, err := filepath.Glob(filepath.Join(srcDir, "movies/*.mp4"))
 	if err != nil {
 		panic(err)
 	}
@@ -28,6 +28,10 @@ func startScrape() []Item {
 
 		fileparts := strings.Split(fileinfo.Name(), ".")
 		hyphenatedName := fileparts[:len(fileparts)-1][0]
+		screenshotFullPath := filepath.Join(srcDir, "screenshots", hyphenatedName+".jpg")
+		if _, err := os.Stat(screenshotFullPath); !os.IsNotExist(err) {
+			item.ScreenshotURL = screenshotFullPath
+		}
 		almostTitle := strings.Title(strings.Join(strings.Split(hyphenatedName, "-"), " "))
 		splitTitle := strings.Split(almostTitle, " ")
 
