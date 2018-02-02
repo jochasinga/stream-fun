@@ -14,7 +14,7 @@ $ go get github.com/garyburd/redigo/redis
 ```
 
 Copy one or more mp4 files and rename them to `stream-fun/assets/my-hyphenated-title.mp4`. The filename must be hyphenated in order to be properly formatted into a readable title (in the above 
-case it would become "My Hyphenated Title").
+case it would become "My Hyphenated Title of the Day").
 
 Then build the project with
 
@@ -45,5 +45,5 @@ $ `./stream-fun`
 
 ```
 
-Browse to `http://localhost:8080` to see the movie playing.
+Browse to `http://localhost:8080/browse` to see the movie list.
 
