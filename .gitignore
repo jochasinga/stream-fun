@@ -1,5 +1,6 @@
-*.mp4
 *~
 *#
-movie-server
+*.rdb
+api
 assets
+package-lock.json
