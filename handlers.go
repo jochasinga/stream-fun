@@ -8,12 +8,20 @@ import (
 	mux "github.com/julienschmidt/httprouter"
 )
 
+type response map[string]interface{}
+
+func (res response) wrap(any interface{}) {
+	res["data"] = (interface{})(any)
+}
+
 // BrowseHandler handles the browse page.
 func BrowseHandler(w http.ResponseWriter, r *http.Request, _ mux.Params) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	items := FindAllItem()
-	if err := json.NewEncoder(w).Encode(items); err != nil {
+	payload := make(response)
+	payload.wrap(items)
+	if err := json.NewEncoder(w).Encode(payload); err != nil {
 		panic(err)
 	}
 }
@@ -22,7 +30,9 @@ func BrowseHandler(w http.ResponseWriter, r *http.Request, _ mux.Params) {
 func ItemHandler(w http.ResponseWriter, r *http.Request, ps mux.Params) {
 	id := getItemID(ps)
 	item := FindItemByID(id)
-	if err := json.NewEncoder(w).Encode(item); err != nil {
+	payload := make(response)
+	payload.wrap(item)
+	if err := json.NewEncoder(w).Encode(payload); err != nil {
 		panic(err)
 	}
 }
@@ -31,7 +41,6 @@ func ItemHandler(w http.ResponseWriter, r *http.Request, ps mux.Params) {
 func WatchHandler(w http.ResponseWriter, r *http.Request, ps mux.Params) {
 	id := getItemID(ps)
 	itemURL := FindItemByID(id).ItemURL
-	// http.ServeFile(w, r, ".assets/test.mp4")
 	http.ServeFile(w, r, itemURL)
 }
 
