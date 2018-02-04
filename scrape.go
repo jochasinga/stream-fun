@@ -76,16 +76,19 @@ func startScrape() []Item {
 			log.Panic(err)
 		}
 
+		screenshotFullPath := getScreenshotFullPath(fileInfo.Name())
+		titleText := getTitleFromFilename(fileInfo.Name())
+		encodedFileStr, _ := base64EncodeFileToString(screenshotFullPath)
+
 		item := Item{
 			ItemURL:       filename,
-			ScreenshotURL: getScreenshotFullPath(fileInfo.Name()),
-			Title:         getTitleFromFilename(fileInfo.Name()),
+			ScreenshotURL: screenshotFullPath,
+			Title:         titleText,
+			ScreenshotAsEncodedString: encodedFileStr,
 		}
 
+		// log.Printf("base64string for %s is %s", filename, encodedFileStr)
 		items = append(items, item)
-
-		encodedFileStr, _ := base64EncodeFileToString(item.ScreenshotURL)
-		log.Printf("base64string for %s is %s", filename, encodedFileStr)
 	}
 	return items
 }

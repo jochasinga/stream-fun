@@ -28,4 +28,5 @@ var routes = Routes{
 	Route{"Browse", "GET", "/browse", BrowseHandler},
 	Route{"Item", "GET", "/item/:id", ItemHandler},
 	Route{"Watch", "GET", "/watch/:id", WatchHandler},
+	Route{"Screenshot", "GET", "/screenshot/:id", ScreenshotHandler},
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -34,6 +35,15 @@ func ItemHandler(w http.ResponseWriter, r *http.Request, ps mux.Params) {
 	payload.wrap(item)
 	if err := json.NewEncoder(w).Encode(payload); err != nil {
 		panic(err)
+	}
+}
+
+// ScreenshotHandler serves a screenshot encoded string
+func ScreenshotHandler(w http.ResponseWriter, r *http.Request, ps mux.Params) {
+	id := getItemID(ps)
+	imageEncodedStr := FindEncodedScreenshotByID(id)
+	if _, err := w.Write(imageEncodedStr); err != nil {
+		log.Fatalf("Failed with error: %v", err)
 	}
 }
 

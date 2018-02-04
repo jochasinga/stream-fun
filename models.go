@@ -31,11 +31,12 @@ type User struct {
 
 // Item represents an item.
 type Item struct {
-	ID            int    `json:"id"`
-	Filename      string `json:"filename"`
-	Title         string `json:"title"`
-	Description   string `json:"description"`
-	ScreenshotURL string `json:"screenshotUrl"`
-	ItemURL       string `json:"itemUrl"`
-	Ratings       Rating `json:"ratings"`
+	ID                        int    `json:"id"`
+	Filename                  string `json:"filename"`
+	Title                     string `json:"title"`
+	Description               string `json:"description"`
+	ScreenshotURL             string `json:"screenshotUrl"`
+	ScreenshotAsEncodedString string `json:"-"`
+	ItemURL                   string `json:"itemUrl"`
+	Ratings                   Rating `json:"ratings"`
 }
