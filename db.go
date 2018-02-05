@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	currentItemID int
-	currentUserID int
+	currentItemID = 1
+	currentUserID = 1
 )
 
 func init() {
