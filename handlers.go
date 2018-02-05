@@ -42,8 +42,10 @@ func ItemHandler(w http.ResponseWriter, r *http.Request, ps mux.Params) {
 func ScreenshotHandler(w http.ResponseWriter, r *http.Request, ps mux.Params) {
 	id := getItemID(ps)
 	imageEncodedStr := FindEncodedScreenshotByID(id)
-	if _, err := w.Write(imageEncodedStr); err != nil {
-		log.Fatalf("Failed with error: %v", err)
+	payload := make(response)
+	payload.wrap(imageEncodedStr)
+	if err := json.NewEncoder(w).Encode(payload); err != nil {
+		log.Panic(err)
 	}
 }
 
