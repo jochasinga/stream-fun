@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/base64"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -63,6 +64,18 @@ func getTitleFromFilename(filename string) string {
 	return strings.Join(splitTitle, " ")
 }
 
+func getDescriptionFromFilename(filename string) string {
+	filenameParts := strings.Split(filename, ".")
+	withoutExt := filenameParts[:len(filenameParts)-1][0]
+	descriptionFullPath := filepath.Join(srcDir, "descriptions", withoutExt+".txt")
+	// descriptionFilename := withoutExt + ".txt"
+	content, err := ioutil.ReadFile(descriptionFullPath)
+	if err != nil {
+		log.Printf("%v not found\n: %v", descriptionFullPath, err)
+	}
+	return string(content)
+}
+
 func startScrape() []Item {
 	items := []Item{}
 	filenames, err := filepath.Glob(filepath.Join(srcDir, "movies/*.mp4"))
@@ -79,11 +92,13 @@ func startScrape() []Item {
 		screenshotFullPath := getScreenshotFullPath(fileInfo.Name())
 		titleText := getTitleFromFilename(fileInfo.Name())
 		encodedFileStr, _ := base64EncodeFileToString(screenshotFullPath)
+		descriptionText := getDescriptionFromFilename(fileInfo.Name())
 
 		item := Item{
-			ItemURL:       filename,
-			ScreenshotURL: screenshotFullPath,
-			Title:         titleText,
+			Title:                     titleText,
+			ItemURL:                   filename,
+			Description:               descriptionText,
+			ScreenshotURL:             screenshotFullPath,
 			ScreenshotAsEncodedString: encodedFileStr,
 		}
 
