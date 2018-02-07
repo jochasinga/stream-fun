@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"math/rand"
 	"strconv"
 
 	"github.com/garyburd/redigo/redis"
@@ -25,8 +26,18 @@ func init() {
 
 	items := startScrape()
 	for _, item := range items {
+		watchers := rand.Intn(10000000) + 10000
+		gross := rand.Intn(100000000) + 1000000
+		ratings := rand.Intn(6) + 1
+		item.Watchers = watchers
+		item.GrossTotal = gross
+		item.Ratings = Rating(ratings)
 		CreateItem(item)
 	}
+}
+
+func injectMockData(target Item, itemFunc func(Item) Item) Item {
+	return itemFunc(target)
 }
 
 func redisConnect() redis.Conn {

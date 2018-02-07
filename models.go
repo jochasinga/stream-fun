@@ -39,4 +39,6 @@ type Item struct {
 	ScreenshotAsEncodedString string `json:"screenshotAsEncodedString"`
 	ItemURL                   string `json:"itemUrl"`
 	Ratings                   Rating `json:"ratings"`
+	GrossTotal                int    `json:"grossTotal"`
+	Watchers                  int    `json:"watchers"`
 }
