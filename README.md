@@ -13,8 +13,13 @@ $ go get github.com/garyburd/redigo/redis
 
 ```
 
-Copy one or more mp4 files and rename them to `stream-fun/assets/my-hyphenated-title.mp4`. The filename must be hyphenated in order to be properly formatted into a readable title (in the above 
-case it would become "My Hyphenated Title of the Day").
+Copy one or more `.mp4` files and rename them to `stream-fun/assets/movies/my-hyphenated-title.mp4`. The filename must be hyphenated in order to be properly formatted into a readable title (in the above 
+case it would become *"My Hyphenated Title of the Day"*).
+
+For each .mp4 file, put a corresponding `.jpg` for screenshot at `stream-fun/assets/screenshots/my-hyphenated-title.jpg`.
+
+The same goes with the description. Put a `.txt` file at `stream-fun/assets/descriptions/my-hyphenated-title.txt`.
+
 
 Then build the project with
 
