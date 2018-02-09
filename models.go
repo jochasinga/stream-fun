@@ -1,5 +1,9 @@
 package main
 
+import (
+	"time"
+)
+
 type Rating int
 
 const (
@@ -22,6 +26,14 @@ func (rating Rating) String() string {
 	return ratings[rating]
 }
 
+type ReleaseStatus int
+
+const (
+	Showing ReleaseStatus = iota
+	ThisWeek
+	Upcoming
+)
+
 // User represents a user of service.
 type User struct {
 	ID       int    `json:"id"`
@@ -31,14 +43,16 @@ type User struct {
 
 // Item represents an item.
 type Item struct {
-	ID                        int    `json:"id"`
-	Filename                  string `json:"filename"`
-	Title                     string `json:"title"`
-	Description               string `json:"description"`
-	ScreenshotURL             string `json:"screenshotUrl"`
-	ScreenshotAsEncodedString string `json:"screenshotAsEncodedString"`
-	ItemURL                   string `json:"itemUrl"`
-	Ratings                   Rating `json:"ratings"`
-	GrossTotal                int    `json:"grossTotal"`
-	Watchers                  int    `json:"watchers"`
+	ID                        int           `json:"id"`
+	Filename                  string        `json:"filename"`
+	Title                     string        `json:"title"`
+	Description               string        `json:"description"`
+	ScreenshotURL             string        `json:"screenshotUrl"`
+	ScreenshotAsEncodedString string        `json:"screenshotAsEncodedString"`
+	ItemURL                   string        `json:"itemUrl"`
+	Ratings                   Rating        `json:"ratings"`
+	GrossTotal                int           `json:"grossTotal"`
+	Watchers                  int           `json:"watchers"`
+	ReleaseStatus             ReleaseStatus `json:"releaseStatus"`
+	Countdown                 time.Duration `json:"countdown"`
 }

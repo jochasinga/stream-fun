@@ -5,8 +5,14 @@ import (
 	"log"
 	"math/rand"
 	"strconv"
+	"time"
 
 	"github.com/garyburd/redigo/redis"
+)
+
+const (
+	week  = time.Duration(24*7) * time.Hour
+	month = time.Duration(24*7*30) * time.Hour
 )
 
 var (
@@ -26,12 +32,19 @@ func init() {
 
 	items := startScrape()
 	for _, item := range items {
-		watchers := rand.Intn(10000000) + 10000
-		gross := rand.Intn(100000000) + 1000000
-		ratings := rand.Intn(6) + 1
-		item.Watchers = watchers
-		item.GrossTotal = gross
-		item.Ratings = Rating(ratings)
+		item.Watchers = rand.Intn(10000000) + 10000
+		item.GrossTotal = rand.Intn(100000000) + 1000000
+		item.Ratings = Rating(rand.Intn(6) + 1)
+		item.ReleaseStatus = ReleaseStatus(rand.Intn(3))
+
+		if item.ReleaseStatus > Showing {
+			if item.ReleaseStatus == ThisWeek {
+				item.Countdown = week
+			}
+			if item.ReleaseStatus == Upcoming {
+				item.Countdown = month
+			}
+		}
 		CreateItem(item)
 	}
 }
