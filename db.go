@@ -34,7 +34,13 @@ func init() {
 	for _, item := range items {
 		item.Watchers = rand.Intn(10000000) + 10000
 		item.GrossTotal = rand.Intn(100000000) + 1000000
-		item.Ratings = Rating(rand.Intn(6) + 1)
+		item.Ratings = func() Rating {
+			rating := Rating(rand.Intn(6) + 1)
+			if rating > 5 {
+				return 5
+			}
+			return rating
+		}()
 		item.ReleaseStatus = ReleaseStatus(rand.Intn(3))
 
 		if item.ReleaseStatus > Showing {
