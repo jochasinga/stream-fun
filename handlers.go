@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
+	"github.com/gorilla/websocket"
 	mux "github.com/julienschmidt/httprouter"
 )
 
@@ -56,10 +59,76 @@ func WatchHandler(w http.ResponseWriter, r *http.Request, ps mux.Params) {
 	http.ServeFile(w, r, itemURL)
 }
 
+// CountdownHandler handles serving a countdown timer websocket.
+func CountdownHandler(w http.ResponseWriter, r *http.Request, ps mux.Params) {
+	itemID := getItemID(ps)
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	if r.Method == "OPTIONS" {
+		w.Header().Set("Access-Control-Allow-Headers", "Authorization, Origin")
+	}
+	serveWs(w, r, itemID)
+}
+
 func getItemID(ps mux.Params) int {
 	id, err := strconv.Atoi(ps.ByName("id"))
 	if err != nil {
 		panic(err)
 	}
 	return id
+}
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+func serveWs(w http.ResponseWriter, r *http.Request, id int) {
+	log.Println("serving Ws")
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	item := FindItemByID(id)
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+
+	go func() {
+		redisconn := redisConnect()
+		defer redisconn.Close()
+
+		for _ = range ticker.C {
+			untilRelease := time.Until(item.ReleaseDate)
+			redisconn.Do("PUBLISH", "countdown:"+strconv.Itoa(id), strconv.Itoa(int(untilRelease)))
+			// redisconn.Do("PUBLISH", "countdown:"+strconv.Itoa(id), strconv.Itoa(int(item.Countdown)))
+			// item.Countdown--
+
+		}
+	}()
+
+	wsconn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer wsconn.Close()
+
+	go func() {
+		countdownChannel := "countdown:" + strconv.Itoa(id)
+		redisSubscribe(ctx, countdownChannel, wsconn)
+	}()
+
+	for {
+		messageType, p, err := wsconn.ReadMessage()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		log.Printf("recv: %s", p)
+		if err := wsconn.WriteMessage(messageType, p); err != nil {
+			log.Println(err)
+			return
+		}
+	}
 }

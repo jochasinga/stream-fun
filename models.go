@@ -55,4 +55,5 @@ type Item struct {
 	Watchers                  int           `json:"watchers"`
 	ReleaseStatus             ReleaseStatus `json:"releaseStatus"`
 	Countdown                 time.Duration `json:"countdown"`
+	ReleaseDate               time.Time     `json:"releaseDate"`
 }

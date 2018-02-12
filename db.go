@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"math/rand"
@@ -8,16 +9,24 @@ import (
 	"time"
 
 	"github.com/garyburd/redigo/redis"
+	"github.com/gorilla/websocket"
 )
 
-const (
-	week  = time.Duration(24*7) * time.Hour
-	month = time.Duration(24*7*30) * time.Hour
-)
+// const (
+// 	day   = time.Duration(24) * time.Hour
+// 	week  = time.Duration(24*7) * time.Hour
+// 	month = time.Duration(24*7*30) * time.Hour
+// )
 
 var (
-	currentItemID = 1
-	currentUserID = 1
+	currentItemID      = 1
+	currentUserID      = 1
+	sampleReleaseDates = [...]time.Time{
+		time.Date(2018, time.April, 13, 23, 0, 0, 0, time.UTC),
+		time.Date(2018, time.February, 14, 12, 0, 0, 0, time.UTC),
+		time.Date(2018, time.November, 16, 15, 0, 0, 0, time.UTC),
+		time.Date(2018, time.December, 6, 22, 0, 0, 0, time.UTC),
+	}
 )
 
 func init() {
@@ -31,7 +40,7 @@ func init() {
 	log.Printf("Successfully FLUSHDB with reply %v\n", reply)
 
 	items := startScrape()
-	for _, item := range items {
+	for i, item := range items {
 		item.Watchers = rand.Intn(10000000) + 10000
 		item.GrossTotal = rand.Intn(100000000) + 1000000
 		item.Ratings = func() Rating {
@@ -41,15 +50,19 @@ func init() {
 			}
 			return rating
 		}()
-		item.ReleaseStatus = ReleaseStatus(rand.Intn(3))
+		// item.ReleaseStatus = ReleaseStatus(rand.Intn(3))
 
-		if item.ReleaseStatus > Showing {
-			if item.ReleaseStatus == ThisWeek {
-				item.Countdown = week
-			}
-			if item.ReleaseStatus == Upcoming {
-				item.Countdown = month
-			}
+		// if item.ReleaseStatus > Showing {
+		// 	if item.ReleaseStatus == ThisWeek {
+		// 		item.Countdown = time.Duration(24*(1+rand.Intn(3))) * time.Hour
+		// 	}
+		// 	if item.ReleaseStatus == Upcoming {
+		// 		item.Countdown = time.Duration(24*7*(1+rand.Intn(2))) * time.Hour
+		// 	}
+		// }
+		// fmt.Println(item.Countdown)
+		if i < len(sampleReleaseDates) {
+			item.ReleaseDate = sampleReleaseDates[i]
 		}
 		CreateItem(item)
 	}
@@ -163,4 +176,56 @@ func FindEncodedScreenshotByID(id int) []byte {
 		return val
 	}
 	return nil
+}
+
+func redisSubscribe(ctx context.Context, channel string, conn *websocket.Conn) error {
+	redisconn := redisConnect()
+	defer conn.Close()
+
+	const healthCheckPeriod = time.Minute
+
+	psc := redis.PubSubConn{Conn: redisconn}
+	if err := psc.Subscribe(channel); err != nil {
+		return err
+	}
+
+	done := make(chan error, 1)
+
+	go func() {
+		for {
+			switch n := psc.Receive().(type) {
+			case error:
+				done <- n
+				return
+			case redis.Message:
+				log.Printf("writing data %v\n", n.Data)
+				_ = conn.WriteMessage(websocket.TextMessage, n.Data)
+			}
+		}
+	}()
+
+	ticker := time.NewTicker(healthCheckPeriod)
+	defer ticker.Stop()
+
+Loop:
+	for {
+		select {
+		case <-ticker.C:
+			if err := psc.Ping(""); err != nil {
+				break Loop
+			}
+		case <-ctx.Done():
+			break Loop
+		case err := <-done:
+			return err
+		}
+	}
+
+	return <-done
+}
+
+func redisPublish(channel, data string) {
+	conn := redisConnect()
+	defer conn.Close()
+	conn.Do("PUBLISH", channel, data)
 }
