@@ -12,12 +12,6 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// const (
-// 	day   = time.Duration(24) * time.Hour
-// 	week  = time.Duration(24*7) * time.Hour
-// 	month = time.Duration(24*7*30) * time.Hour
-// )
-
 var (
 	currentItemID      = 1
 	currentUserID      = 1
@@ -50,17 +44,6 @@ func init() {
 			}
 			return rating
 		}()
-		// item.ReleaseStatus = ReleaseStatus(rand.Intn(3))
-
-		// if item.ReleaseStatus > Showing {
-		// 	if item.ReleaseStatus == ThisWeek {
-		// 		item.Countdown = time.Duration(24*(1+rand.Intn(3))) * time.Hour
-		// 	}
-		// 	if item.ReleaseStatus == Upcoming {
-		// 		item.Countdown = time.Duration(24*7*(1+rand.Intn(2))) * time.Hour
-		// 	}
-		// }
-		// fmt.Println(item.Countdown)
 		if i < len(sampleReleaseDates) {
 			item.ReleaseDate = sampleReleaseDates[i]
 		}
