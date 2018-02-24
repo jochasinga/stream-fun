@@ -39,6 +39,11 @@ type User struct {
 	ID       int    `json:"id"`
 	Username string `json:"username"`
 	Email    string `json:"email"`
+	Password string `json:"-"`
+	// ProfilePicURL             string  `json:"profilePicUrl"`
+	// ProfilePicAsEncodedString string  `json:"profilePicAsEncodedString"`
+	// MyItems                   []Item  `json:"myItems"`
+	// Friends                   []*User `json:"friends"`
 }
 
 // Item represents an item.
