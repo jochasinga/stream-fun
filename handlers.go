@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
@@ -131,4 +132,20 @@ func serveWs(w http.ResponseWriter, r *http.Request, id int) {
 			return
 		}
 	}
+}
+
+func Login(w http.ResponseWriter, r *http.Request, _ mux.Params) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	log.Printf("Received: %v\n", r.Method)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Printf("Error reading body: %v", err)
+		http.Error(w, "can't read body", http.StatusBadRequest)
+		return
+	}
+	log.Println("body:", string(body))
 }
