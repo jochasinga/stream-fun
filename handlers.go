@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"io/ioutil"
@@ -140,12 +141,25 @@ func Login(w http.ResponseWriter, r *http.Request, _ mux.Params) {
 	w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	log.Printf("Received: %v\n", r.Method)
+	if r.Method == "OPTIONS" {
+		return
+	}
+
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Printf("Error reading body: %v", err)
 		http.Error(w, "can't read body", http.StatusBadRequest)
 		return
 	}
-	log.Println("body:", string(body))
+	var u User
+	if err := json.NewDecoder(bytes.NewReader(body)).Decode(&u); err != nil {
+		log.Fatal(err)
+	}
+	user := FindUserByUsername(u.Username)
+	if u.Username == user.Username {
+		if u.Password == user.Password {
+			log.Printf("%s logged in!", u.Username)
+			return
+		}
+	}
+	log.Println("Not authorized")
 }

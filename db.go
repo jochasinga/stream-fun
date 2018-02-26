@@ -21,6 +21,23 @@ var (
 		time.Date(2018, time.November, 16, 15, 0, 0, 0, time.UTC),
 		time.Date(2018, time.December, 6, 22, 0, 0, 0, time.UTC),
 	}
+	users = [...]User{
+		User{
+			Username: "jo.chasinga@gmail.com",
+			Email:    "jo.chasinga@gmail.com",
+			Password: "supersecrety99",
+		},
+		User{
+			Username: "mindyj@gmail.com",
+			Email:    "mindyj@gmail.com",
+			Password: "gogoSuperGirl11",
+		},
+		User{
+			Username: "avaiscool@gmail.com",
+			Email:    "avaiscool@gmail.com",
+			Password: "avarocksthedocksoff",
+		},
+	}
 )
 
 func init() {
@@ -49,6 +66,10 @@ func init() {
 		}
 		CreateItem(item)
 	}
+
+	for _, user := range users {
+		CreateUser(user)
+	}
 }
 
 func injectMockData(target Item, itemFunc func(Item) Item) Item {
@@ -61,6 +82,50 @@ func redisConnect() redis.Conn {
 		panic(err)
 	}
 	return conn
+}
+
+// CreateUser creates a user in the database.
+func CreateUser(user User) {
+	user.ID = currentUserID
+	currentUserID++
+
+	conn := redisConnect()
+	defer conn.Close()
+
+	b, err := json.Marshal(user)
+	if err != nil {
+		panic(err)
+	}
+
+	key := "user:" + user.Email
+	reply, err := conn.Do("SET", key, b)
+	if err != nil {
+		panic(err)
+	}
+
+	log.Printf("SET %s %s\n", reply, key)
+}
+
+func FindUserByUsername(username string) User {
+	conn := redisConnect()
+	defer conn.Close()
+
+	reply, err := conn.Do("GET", "user:"+username)
+	if err != nil {
+		// panic(err)
+		log.Println(err)
+	}
+
+	log.Println("GET OK", reply)
+	var user User
+	if err = json.Unmarshal(reply.([]byte), &user); err != nil {
+		panic(err)
+	}
+
+	if user.Username == username {
+		return user
+	}
+	return User{}
 }
 
 // CreateItem creates a new Item in the database.
