@@ -158,6 +158,14 @@ func Login(w http.ResponseWriter, r *http.Request, _ mux.Params) {
 	if u.Username == user.Username {
 		if u.Password == user.Password {
 			log.Printf("%s logged in!", u.Username)
+			payload := make(response)
+			payload.wrap(map[string]interface{}{
+				"statusCode": http.StatusMovedPermanently,
+				"redirected": true,
+			})
+			if err := json.NewEncoder(w).Encode(payload); err != nil {
+				log.Panic(err)
+			}
 			return
 		}
 	}
